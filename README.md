@@ -1,1 +1,1 @@
-# Excel_parser
+Simple program that parses the selected excel file.
