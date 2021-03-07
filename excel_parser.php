@@ -41,8 +41,8 @@
             Material_type VARCHAR(50) COLLATE 'utf8_general_ci',
             Mass VARCHAR(20) COLLATE 'utf8_general_ci',
             Mass_m VARCHAR(20) COLLATE 'utf8_general_ci',
-            Work VARCHAR(20),
-            Work_m VARCHAR(20)
+            Work VARCHAR(20) COLLATE 'utf8_general_ci',
+            Work_m VARCHAR(20) COLLATE 'utf8_general_ci'
         )";
         
         $result = mysqli_query($con, $sql) or die ("Bad create: $con->error");
@@ -117,9 +117,6 @@
             {
                 if ($work_col_numb == $invalid_val)
                 {
-                    echo $work_col_numb;
-                    echo $measurement_col_numb;
-                    echo $mass_col_numb;
                     echo 'Header not found';
                     break;
                 }
