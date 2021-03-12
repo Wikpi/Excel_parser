@@ -53,8 +53,10 @@
                 Material_type VARCHAR(50) COLLATE 'utf8_general_ci',
                 Mass VARCHAR(20) COLLATE 'utf8_general_ci',
                 Mass_m VARCHAR(20) COLLATE 'utf8_general_ci',
+                Mass_price VARCHAR (20) COLLATE 'utf8_general_ci',
                 Work VARCHAR(20) COLLATE 'utf8_general_ci',
-                Work_m VARCHAR(20) COLLATE 'utf8_general_ci'
+                Work_m VARCHAR(20) COLLATE 'utf8_general_ci',
+                Work_price VARCHAR (20) COLLATE 'utf8_general_ci'
             )";
             
             $result = mysqli_query($con, $sql) or die ("Bad create: $con->error");
@@ -71,6 +73,7 @@
             $work_col_numb = $invalid_val;
             $mass_col_numb = $invalid_val;
             $measurement_col_numb = $invalid_val;
+            $price_col_numb = $invalid_val;
 
             $rows = $excel->rows();
             $crr_row_idx = 0;
@@ -96,8 +99,10 @@
                 $material = '';
                 $mass = '';
                 $mass_m = '';
+                $mass_price = '';
                 $work = '';
                 $work_m = ''; 
+                $work_price = '';
 
                 //Find header
                 if ($c[0] == 'Eil. Nr.')
@@ -112,18 +117,28 @@
                             $measurement_col_numb = $y;
                             continue;
                         }else {}
+
+                        // Find price column in the header
+                        if (isset($c[$y]) && $c[$y] == 'Kaina')
+                        {
+                            $price_col_numb = $y;
+                            continue;
+                        }else{}
+
                         // Find work column in the header
                         if (isset($c[$y]) && $c[$y] == 'Darbas')
                         {
                             $work_col_numb = $y;
                             continue;
                         }else{}
+
                         // Find mass column in the header
                         if (isset($c[$y]) && $c[$y] == 'Medžiagos')
                         {
                             $mass_col_numb = $y;
                             continue;
                         }else{}
+
                     }
                 }
                 
@@ -150,6 +165,7 @@
                     {
                         $work = $next_row[$work_col_numb];
                         $work_m = $next_row[$measurement_col_numb];
+                        $work_price = $next_row[$price_col_numb].' eur';
 
                     }else{echo "No work data <br>";}
                     
@@ -162,12 +178,14 @@
                         $material = $next_row[1];
                         $mass = $next_row[$mass_col_numb];
                         $mass_m = $next_row[$measurement_col_numb];
+                        $mass_price = $next_row[$price_col_numb].' eur';
                         
                     }else{echo "No material data <br>";}
 
                     //Insert into mysqli table
-                    $estimate = 'INSERT INTO estimate (Work_name, Material_type, Mass, Mass_m, Work, Work_m) VALUES 
-                                                        ("'.$name.'", "'.$material.'", "'.$mass.'", "'.$mass_m.'", "'.$work.'", "'.$work_m.'")';
+                    $estimate = 'INSERT INTO estimate (Work_name, Material_type, Mass, Mass_m, Mass_price, Work, Work_m, Work_price) VALUES 
+                                                        ("'.$name.'", "'.$material.'", "'.$mass.'", "'.$mass_m.'", "'.$mass_price.'",
+                                                         "'.$work.'", "'.$work_m.'", "'.$work_price.'")';
 
                     if (mysqli_query($con, $estimate)){echo "Data successfully inserted <br>";}
                     else {echo 'Error inserting material data <br>', $con->error, '<br>.';}
