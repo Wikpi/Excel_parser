@@ -1,7 +1,6 @@
 <?php
 class SimpleXLSX {
-	// Don't remove this string! Created by Sergey Shuchkin sergey.shuchkin@gmail.com
-	public static $CF = [ // Cell formats
+	public static $CF = array(
 		0  => 'General',
 		1  => '0',
 		2  => '0.00',
@@ -48,15 +47,15 @@ class SimpleXLSX {
 		68 => 't0.00%',
 		69 => 't# ?/?',
 		70 => 't# ??/??',
-	];
-	public $cellFormats = [];
+	);
+	public $cellFormats = array();
 	public $datetimeFormat = 'Y-m-d H:i:s';
 	public $debug;
 
 	/* @var SimpleXMLElement[] $sheets */
 	private $sheets;
-	private $sheetNames = [];
-	private $sheetFiles = [];
+	private $sheetNames = array();
+	private $sheetFiles = array();
 	// scheme
 	private $styles;
 	private $hyperlinks;
@@ -112,13 +111,13 @@ class SimpleXLSX {
 		if ( $debug !== null ) {
 			$this->debug = $debug;
 		}
-		$this->package = [
+		$this->package = array(
 			'filename' => '',
 			'mtime'    => 0,
 			'size'     => 0,
 			'comment'  => '',
-			'entries'  => []
-		];
+			'entries'  => array()
+		);
 		if ( $filename && $this->_unzip( $filename, $is_data ) ) {
 			$this->_parse();
 		}
@@ -221,7 +220,7 @@ class SimpleXLSX {
 
 		// Loop through the entries
 		foreach ( $aE as $vZ ) {
-			$aI       = [];
+			$aI       = array();
 			$aI['E']  = 0;
 			$aI['EM'] = '';
 			// Retrieving local file header information
@@ -316,14 +315,14 @@ class SimpleXLSX {
 				( ( $aP['FD'] & 0xfe00 ) >> 9 ) + 1980 );
 
 			//$this->Entries[] = &new SimpleUnzipEntry($aI);
-			$this->package['entries'][] = [
+			$this->package['entries'][] = array(
 				'data'      => $aI['D'],
 				'error'     => $aI['E'],
 				'error_msg' => $aI['EM'],
 				'name'      => $aI['N'],
 				'path'      => $aI['P'],
 				'time'      => $aI['T']
-			];
+			);
 
 		} // end for each entries
 
@@ -350,8 +349,8 @@ class SimpleXLSX {
 
 	private function _parse() {
 		// Document data holders
-		$this->sharedstrings = [];
-		$this->sheets        = [];
+		$this->sharedstrings = array();
+		$this->sheets        = array();
 //		$this->styles = array();
 
 		// Read relations and search for officeDocument
@@ -364,7 +363,7 @@ class SimpleXLSX {
 
 				if ( $rel_type === 'officeDocument' && $workbook = $this->getEntryXML( $rel_target ) ) {
 
-					$index_rId = []; // [0 => rId1]
+					$index_rId = array(); // [0 => rId1]
 
 					$index = 0;
 					foreach ( $workbook->sheets->sheet as $s ) {
@@ -412,7 +411,7 @@ class SimpleXLSX {
 
 								$this->styles = $this->getEntryXML( $wrel_path );
 
-								$nf = [];
+								$nf = array();
 								if ( $this->styles->numFmts->numFmt !== null ) {
 									foreach ( $this->styles->numFmts->numFmt as $v ) {
 										$nf[ (int) $v['numFmtId'] ] = (string) $v['formatCode'];
@@ -529,7 +528,7 @@ class SimpleXLSX {
 	}
 
 	private function _parseRichText( $is = null ) {
-		$value = [];
+		$value = array();
 
 		if ( isset( $is->t ) ) {
 			$value[] = (string) $is->t;
@@ -555,12 +554,12 @@ class SimpleXLSX {
 		$numCols = $dim[0];
 		$numRows = $dim[1];
 
-		$emptyRow = [];
+		$emptyRow = array();
 		for ( $i = 0; $i < $numCols; $i ++ ) {
 			$emptyRow[] = '';
 		}
 
-		$rows = [];
+		$rows = array();
 		for ( $i = 0; $i < $numRows; $i ++ ) {
 			$rows[] = $emptyRow;
 		}
@@ -596,7 +595,7 @@ class SimpleXLSX {
 			return false;
 		}
 
-		$rows = [];
+		$rows = array();
 
 		$dim     = $this->dimension( $worksheetIndex );
 		$numCols = $dim[0];
@@ -609,7 +608,7 @@ class SimpleXLSX {
 				for ( $k = $x; $k >= 0; $k = (int) ( $k / 26 ) - 1 ) {
 					$c = chr( $k % 26 + 65 ) . $c;
 				}
-				$rows[ $y ][ $x ] = [
+				$rows[ $y ][ $x ] = array(
 					'type'   => '',
 					'name'   => $c . ( $y + 1 ),
 					'value'  => '',
@@ -617,7 +616,7 @@ class SimpleXLSX {
 					'f'      => '',
 					'format' => '',
 					'r'      => $y
-				];
+				);
 			}
 		}
 
@@ -648,7 +647,7 @@ class SimpleXLSX {
 					$format = '';
 				}
 
-				$rows[ $curR ][ $curC ] = [
+				$rows[ $curR ][ $curC ] = array(
 					'type'   => $t,
 					'name'   => (string) $c['r'],
 					'value'  => $this->value( $c ),
@@ -656,7 +655,7 @@ class SimpleXLSX {
 					'f'      => (string) $c->f,
 					'format' => $format,
 					'r'      => $r_idx
-				];
+				);
 				$curC ++;
 			}
 			$curR ++;
@@ -687,9 +686,9 @@ class SimpleXLSX {
 			$ws = $this->sheets[ $worksheetIndex ];
 
 			if ( !isset($this->hyperlinks[ $worksheetIndex ]) && isset( $ws->hyperlinks ) ) {
-				$this->hyperlinks[ $worksheetIndex ] = [];
+				$this->hyperlinks[ $worksheetIndex ] = array();
 				$sheet_rels = str_replace('worksheets','worksheets/_rels', $this->sheetFiles[$worksheetIndex]).'.rels';
-				$link_ids = [];
+				$link_ids = array();
 
 				if ( $rels = $this->getEntryXML( $sheet_rels ) ) {
 					// hyperlink
@@ -731,7 +730,7 @@ class SimpleXLSX {
 	public function dimension( $worksheetIndex = 0 ) {
 
 		if ( ( $ws = $this->worksheet( $worksheetIndex ) ) === false ) {
-			return [ 0, 0 ];
+			return array( 0, 0 );
 		}
 		/* @var SimpleXMLElement $ws */
 
@@ -741,12 +740,12 @@ class SimpleXLSX {
 			$d   = explode( ':', $ref );
 			$idx = $this->getIndex( $d[1] );
 
-			return [ $idx[0] + 1, $idx[1] + 1 ];
+			return array( $idx[0] + 1, $idx[1] + 1 );
 		}
 		if ( $ref !== '' ) { // 0.6.8
 			$index = $this->getIndex( $ref );
 
-			return [ $index[0] + 1, $index[1] + 1 ];
+			return array( $index[0] + 1, $index[1] + 1 );
 		}
 
 		// slow method
@@ -767,7 +766,7 @@ class SimpleXLSX {
 			}
 		}
 
-		return [ $maxC + 1, $maxR + 1 ];
+		return array( $maxC + 1, $maxR + 1 );
 	}
 
 	public function getIndex( $cell = 'A1' ) {
@@ -784,12 +783,12 @@ class SimpleXLSX {
 				$index += ( ord( $col[ $i ] ) - 64 ) * pow( 26, $colLen - $i - 1 );
 			}
 
-			return [ $index - 1, $row - 1 ];
+			return array( $index - 1, $row - 1 );
 		}
 
 //		$this->error( 'Invalid cell index ' . $cell );
 
-		return [ - 1, - 1 ];
+		return array( - 1, - 1 );
 	}
 
 	public function value( $cell ) {
@@ -1003,7 +1002,7 @@ class SimpleXLSX {
 		$target = ( $base ? $base . '/' : '' ) . $target;
 		// a/b/../c -> a/c
 		$parts = explode( '/', $target );
-		$abs   = [];
+		$abs   = array();
 		foreach ( $parts as $p ) {
 			if ( '.' === $p ) {
 				continue;
