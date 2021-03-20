@@ -1,0 +1,10 @@
+
+----------Release Notes------------
+
+v. 1.0.0
+Changes: 
+	Removed db use
+	Unit test are now written to file
+	Added release notes
+	Removed die use
+	

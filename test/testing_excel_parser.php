@@ -1,19 +1,30 @@
 <?php
 require_once __DIR__.'../../excel_parser.php';
+
+$crr_date = date("Y-m-d Hi");
+$txt_file = 'TestReport.txt';
+$test_report = fopen($txt_file, 'w');
+
+fwrite($test_report, $crr_date."\n");
+
 //TESTING EXCEL PARSER
 // Test1 Good output
 function TC1()
 {
-    echo "----TEST1----<br>";
-    echo 'Import valid file, expecting 13 lines<br>';
+    global $test_report, $txt_file;
+
+    fwrite($test_report, "----TEST1----\nImport valid file, expecting 13 lines\n");
+    $wanted = 13;
+    $got = 0; 
     $filename = "test1.xlsx";
-    main_main($filename);
-    $select = "SELECT * FROM Estimate";
-    $con = mysqli_connect('localhost', 'root', '', 'test');
-    if ($query = mysqli_query($con, $select))
+    $return = parse_excel_file($filename, 0);
+    $got = count($return);
+    if ($wanted == $got)
     {
-        $row_cnt = $query->num_rows;
-        echo "Found number of rows $row_cnt <br><br>";
+        fwrite($test_report, "Success, found number of lines ".$got."\n\n");
+    }else
+    {
+        fwrite($test_report, "Failed, found number of lines ".$got."\n\n");
     }
     
 }
@@ -21,108 +32,140 @@ function TC1()
 // TC2 Missing header
 function TC2()
 {
-    echo "----TEST2---- <br>";
-    echo 'Import file has no header, expecting no lines<br>';
+    global $test_report, $txt_file;
+
+    fwrite($test_report, "----TEST2----\nImport file has no header, expecting no lines\n");
+    $wanted = 0;
+    $got = 0; 
     $filename = "test2.xlsx";
-    main_main($filename);
-    $select = "SELECT * FROM Estimate";
-    $con = mysqli_connect('localhost', 'root', '', 'test');
-    if ($query = mysqli_query($con, $select))
+    $return = parse_excel_file($filename, 0);
+    $got = count($return);
+    if ($wanted == $got)
     {
-        $row_cnt = $query->num_rows;
-        echo "Found number of rows $row_cnt <br><br>";
+        fwrite($test_report, "Success, found number of lines ".$got."\n\n");
+    }else
+    {
+        fwrite($test_report, "Failed, found number of lines ".$got."\n\n");
     }
 }
 
 // TC3 Missing summary
 function TC3()
 {
-    echo "----TEST3----<br>";
-    echo 'Import file is missing 1 summary, expecting 12 lines<br>';
+    global $test_report, $txt_file;
+
+    fwrite($test_report, "----TEST3----\nImport file is missing 1 summary, expecting 12 lines\n");
+    $wanted = 12;
+    $got = 0; 
     $filename = "test3.xlsx";
-    main_main($filename);
-    $select = "SELECT * FROM Estimate";
-    $con = mysqli_connect('localhost', 'root', '', 'test');
-    if ($query = mysqli_query($con, $select))
+    $return = parse_excel_file($filename, 0);
+    $got = count($return);
+    if ($wanted == $got)
     {
-        $row_cnt = $query->num_rows;
-        echo "Found number of rows $row_cnt <br><br>";
+        fwrite($test_report, "Success, found number of lines ".$got."\n\n");
+    }else
+    {
+        fwrite($test_report, "Failed, found number of lines ".$got."\n\n");
     }
 }
 
 // TC4 Missing material
 function TC4()
 {
-    echo "----TEST4----<br>";
-    echo 'Import files 1 job missing material row, expecting 13 lines<br>';
+    global $test_report, $txt_file;
+
+    fwrite($test_report, "----TEST4----\nImport files 1 job missing material row, expecting 13 lines\n");
+    $wanted = 13;
+    $got = 0; 
     $filename = "test4.xlsx";
-    main_main($filename);
-    $select = "SELECT * FROM Estimate";
-    $con = mysqli_connect('localhost', 'root', '', 'test');
-    if ($query = mysqli_query($con, $select))
+    $return = parse_excel_file($filename, 0);
+    $got = count($return);
+    if ($wanted == $got)
     {
-        $row_cnt = $query->num_rows;
-        echo "Found number of rows $row_cnt <br><br>";
+        fwrite($test_report, "Success, found number of lines ".$got."\n\n");
+    }else
+    {
+        fwrite($test_report, "Failed, found number of lines ".$got."\n\n");
     }
 }
 
 // TC5 Missing work
 function TC5()
 {
-    echo "----TEST5----<br>";
-    echo 'Import files 1 job missing work row, expecting 13 lines<br>';
+    global $test_report, $txt_file;
+
+    fwrite($test_report, "----TEST5----\nImport files 1 job missing work row, expecting 13 lines\n");
+    $wanted = 13;
+    $got = 0; 
     $filename = "test5.xlsx";
-    main_main($filename);
-    $select = "SELECT * FROM Estimate";
-    $con = mysqli_connect('localhost', 'root', '', 'test');
-    if ($query = mysqli_query($con, $select))
+    $return = parse_excel_file($filename, 0);
+    $got = count($return);
+    if ($wanted == $got)
     {
-        $row_cnt = $query->num_rows;
-        echo "Found number of rows $row_cnt <br><br>";
+        fwrite($test_report, "Success, found number of lines ".$got."\n\n");
+    }else
+    {
+        fwrite($test_report, "Failed, found number of lines ".$got."\n\n");
     }
 }
 
 // TC6 Missing exit condition
 function TC6()
 {
-    echo "----TEST6----<br>";
-    echo 'Import valid file, missing 1 exit condition, expecting 13 lines<br>';
+    global $test_report, $txt_file;
+
+    fwrite($test_report, "----TEST6----\nImport valid file, missing 1 exit condition, expecting 13 lines\n");
+    $wanted = 13;
+    $got = 0; 
     $filename = "test6.xlsx";
-    main_main($filename);
-    $select = "SELECT * FROM Estimate";
-    $con = mysqli_connect('localhost', 'root', '', 'test');
-    if ($query = mysqli_query($con, $select))
+    $return = parse_excel_file($filename, 0);
+    $got = count($return);
+    if ($wanted == $got)
     {
-        $row_cnt = $query->num_rows;
-        echo "Found number of rows $row_cnt <br><br>";
+        fwrite($test_report, "Success, found number of lines ".$got."\n\n");
+    }else
+    {
+        fwrite($test_report, "Failed, found number of lines ".$got."\n\n");
     }
 }
 
 // TC7 Wrong extension
 function TC7()
 {
-    echo "----TEST7----<br>";
-    echo 'Import wrong file extension, expecting nothing<br>';
-    $filename = "test7.txt";
-    main_main($filename);
-    $select = "SELECT * FROM Estimate";
-    $con = mysqli_connect('localhost', 'root', '', 'test');
-    echo 'Found number of rows 0<br><br>';
+    global $test_report, $txt_file;
+
+    fwrite($test_report, "----TEST7----\nImport wrong file extension, expecting nothing\n");
+    $wanted = 0;
+    $got = 0; 
+    $filename = "test7.xlsx";
+    $return = parse_excel_file($filename, 0);
+    $got = count($return);
+    if ($wanted == $got)
+    {
+        fwrite($test_report, "Success, found number of lines ".$got."\n\n");
+    }else
+    {
+        fwrite($test_report, "Failed, found number of lines ".$got."\n\n");
+    }
 }
 
 // TC8 Correct extension, meesed up file
 function TC8()
 {
-    echo "----TEST8----<br>";
-    echo 'Import valid file, cant get data from inside, expecting no lines<br>';
+    global $test_report, $txt_file;
+
+    fwrite($test_report, "----TEST8----\nImport valid file, cant get data from inside, expecting no lines\n");
+    $wanted = 0;
+    $got = 0; 
     $filename = "test8.xlsx";
-    main_main($filename);
-    $select = "SELECT * FROM Estimate";
-    $con = mysqli_connect('localhost', 'root', '', 'test');
-    if ($query = mysqli_query($con, $select))
+    $return = parse_excel_file($filename, 0);
+    $got = count($return);
+    if ($wanted == $got)
     {
-        $row_cnt = $query->num_rows;
-        echo "Found number of rows $row_cnt <br><br>";
+        fwrite($test_report, "Success, found number of lines ".$got."\n\n");
+    }else
+    {
+        fwrite($test_report, "Failed, found number of lines ".$got."\n\n");
     }
 }
 
@@ -134,5 +177,7 @@ TC5();
 TC6();
 TC7();
 TC8();
-
+fclose($test_report);
+//$new_name = "TestReport ".$crr_date;
+//$test_report = rename($txt_file, $new_name.'.txt');
 ?>

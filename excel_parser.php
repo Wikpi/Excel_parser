@@ -1,29 +1,13 @@
 <?php
-    function main_main($file)
+    //Function echoes only if $file_specifier is set to 1
+    function printer($f, $s)
     {
-        // Enter your mysql username
-        $user = 'root';
-        // Enter your mysql password
-        $password = '';
-        // Enter the database you are going to use
-        $database = 'test';
-        //Default host
-        $host = 'localhost';
+        if ($s == 1){echo $f;} 
+    }
 
-        mysqli_report(MYSQLI_REPORT_ERROR | MYSQLI_REPORT_STRICT);
-        // Connect to mysql
-        $con = mysqli_connect($host, $user, $password, $database);
-        $con->set_charset("utf8");
-
-        // Check if there was an error connecting
-        if ($con->connect_error)
-        {
-            die('Connect Error (' . $con->connect_errno . ') '
-                    . $con->connect_error);
-        }
-
-        mysqli_query($con, 'DROP TABLE IF EXISTS `test`.`estimate`');
-
+    function parse_excel_file($file, $file_specifier)
+    {
+        
         if(isset($file))
         {   
             //Check if user inputed the correct file type
@@ -31,32 +15,28 @@
             $check_extension = pathinfo($file, PATHINFO_EXTENSION);
             if (!in_array($check_extension, $wanted))
             {
-                echo "You have inputed the wrong file type <br>";
-                echo "Wanted file type: xlsx(excel)";
+                printer("You have inputed the wrong file type <br>", $file_specifier);
+                printer("Wanted file type: xlsx(excel)",  $file_specifier);
                 $file = NULL;
             }else
             {
-
-                //Create table
-                $sql = "CREATE TABLE estimate(
-                    Id INT(6) UNSIGNED AUTO_INCREMENT PRIMARY KEY,
-                    Work_name VARCHAR(150) COLLATE 'utf8_general_ci',
-                    Material_type VARCHAR(50) COLLATE 'utf8_general_ci',
-                    Mass FLOAT,
-                    Mass_m VARCHAR(20) COLLATE 'utf8_general_ci',
-                    Mass_price FLOAT,
-                    Work VARCHAR(20) COLLATE 'utf8_general_ci',
-                    Work_m VARCHAR(20) COLLATE 'utf8_general_ci',
-                    Work_price FLOAT
-                )";
-                
-                $result = mysqli_query($con, $sql) or die ("Bad create: $con->error");
-                
                 //Incude excel_parser class
                 require_once __DIR__.'/excel_parser_class.php';
                 
-                $excel = SimpleXLSX::parse($file);
-                
+                // $special_char = array("ą", "č", "ę", "ė", "į", "š", "ų", "ū", "ž", " ", "(", ")");
+                // $correct_word = str_replace($special_char, "", $file);
+                // $file = $correct_word;
+                // echo $file;
+
+                if ($excel = SimpleXLSX::parse($file))
+                {
+                    $rows = $excel->rows();
+                }else
+                {
+                    printer('Cant parse!', $file_specifier);
+                    return NULL;
+                }
+            
                 $num_cols = 15;
                 $num_rows = 200;
 
@@ -67,27 +47,27 @@
                 $price_col_numb = $invalid_val;
                 $queue_numb = $invalid_val;
                 
-                    
-                $rows = $excel->rows();
                 $crr_row_idx = 0;
                 $jobs_found = 0;
-            
-                echo 'Starting! <br>';
+                $jobs_array = [];
+
+                printer('Starting! <br>', $file_specifier);
                 //Start parsing
                 foreach ($rows as $c)
                 {   
                     // Exit causes
                     if ($crr_row_idx >= $num_rows)
                     {
-                        echo "<br>Exited by reaching maxmimum number of rows! <br>";
+                        printer("<br>Exited by reaching maxmimum number of rows! <br>",  $file_specifier);
                         break;
                     }
                     if ($c[1] == 'Iš viso')
                     {
-                        echo "<br>Exited by reaching the conclusion! <br>";
+                        printer("<br>Exited by reaching the conclusion! <br>",  $file_specifier);
                         break;
                     }
 
+                    $summary = '';
                     $name = '';
                     $material = '';
                     $mass = '';
@@ -101,7 +81,7 @@
                     if ($c[0] == 'Eil. Nr.')
                     {
                         $queue_numb = $crr_row_idx;
-                        echo "Found header! <br>";
+                        printer("Found header! <br>",  $file_specifier);
                         $y = 0;
                         for ($y; $y <= $num_cols; $y++)
                         {  
@@ -142,16 +122,22 @@
                         //Chekc if header was found
                         if ($work_col_numb == $invalid_val)
                         {
-                            echo 'Header not found';
+                            printer('Header not found',  $file_specifier);
                             break;
                         }
                         $jobs_found++;
-                        echo "<br>Found job $jobs_found! <br>";
+                        printer("<br>Found job $jobs_found! <br>",  $file_specifier);
                         
+                        //Assign summary number
+                        $summary = $c[0];
+
                         //Assign name variable
                         $name = $c[1];
-                        print_r($name);
-                        echo '<br>';
+                        if ($file_specifier == 1)
+                        {
+                            print_r($name);
+                        }
+                        printer('<br>', $file_specifier);
                         $next_row_idx = $crr_row_idx+1;
                         $next_row = $rows[$next_row_idx];
 
@@ -162,7 +148,7 @@
                             $work_m = $next_row[$measurement_col_numb];
                             $work_price = $next_row[$price_col_numb];
 
-                        }else{echo "No work data <br>";}
+                        }else{printer("No work data <br>",  $file_specifier);}
                         
                         $next_row_idx++;
                         $next_row = $rows[$next_row_idx];
@@ -175,30 +161,31 @@
                             $mass_m = $next_row[$measurement_col_numb];
                             $mass_price = $next_row[$price_col_numb];
                             
-                        }else{echo "No material data <br>";}
+                        }else{printer("No material data <br>",  $file_specifier);}
 
-                        #Insert into database
-                        $stmt = mysqli_prepare($con, "INSERT INTO estimate 
-                                                        (Work_name, Material_type, Mass, Mass_m, Mass_price, Work, Work_m, Work_price) 
-                                                        VALUES (?, ?, ?, ?, ?, ?, ?, ?)");
-                        if ($stmt) {
-                            mysqli_stmt_bind_param($stmt, 'ssdsdssd', $name, $material, $mass, $mass_m, $mass_price, $work, $work_m, $work_price);
-                            mysqli_stmt_execute($stmt);
-                            echo 'Data successfully inserted<br>';
-                        } else {
-                            echo "Error mysqli_prepare!<br>";
-                        }
-
+                        //Insert into array
+                        $new_jobs = ["line_num"=>$summary, "job_name"=>$name, "material_name"=>$material,
+                                     "material_amount"=>$mass, "mass_unit"=>$mass_m, "mass_unit_price"=>$mass_price,
+                                     "work_amount"=>$work, "work_unit"=>$work_m, "work_unit_price"=>$work_price];
+                        array_push($jobs_array, $new_jobs);
                             
                     }else{}
                     
                     
                     $crr_row_idx++;
                 }
-                echo '<br>Finished!<br>';
-                echo 'Found '.$jobs_found.' jobs!<br>';
-                //Close connection
-                mysqli_close($con);
+
+                //// Prints out the array
+                // if ($file_specifier == 1)
+                // {
+                //     echo '<pre>';
+                //     print_r($jobs_array);
+                //     echo '</pre>';
+                // }
+
+                printer( '<br>Finished!<br>',  $file_specifier);
+                printer( 'Found '.$jobs_found.' jobs!<br>',  $file_specifier);
+                return $jobs_array;
             }
         }
     }
@@ -209,12 +196,16 @@
 </head>
 <body>
 <form action="#" method="POST" enctype="multipart/form-data">
-    <input type="file" name="excel">
+    <input type="file" name="estimate">
     <input type="submit" name="Submit">
 </form>
 <?php
-    $input = $_FILES['excel']['name'];
-    main_main($input);
+    $input = $_FILES['estimate']['name'];
+    if ($input)
+    {
+        parse_excel_file($input, 1);
+    }
+    
 ?>
 </body>
 </html>
