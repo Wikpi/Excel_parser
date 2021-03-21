@@ -148,7 +148,10 @@
                             $work_m = $next_row[$measurement_col_numb];
                             $work_price = $next_row[$price_col_numb];
 
-                        }else{printer("No work data <br>",  $file_specifier);}
+                        }else
+                        {
+                            printer("No work data <br>",  $file_specifier);
+                        }
                         
                         $next_row_idx++;
                         $next_row = $rows[$next_row_idx];
@@ -164,10 +167,14 @@
                         }else{printer("No material data <br>",  $file_specifier);}
 
                         //Insert into array
-                        $new_jobs = ["line_num"=>$summary, "job_name"=>$name, "material_name"=>$material,
+                        if ($work != '')
+                        {
+                            $new_jobs = ["line_num"=>$summary, "job_name"=>$name, "material_name"=>$material,
                                      "material_amount"=>$mass, "mass_unit"=>$mass_m, "mass_unit_price"=>$mass_price,
                                      "work_amount"=>$work, "work_unit"=>$work_m, "work_unit_price"=>$work_price];
-                        array_push($jobs_array, $new_jobs);
+                            array_push($jobs_array, $new_jobs);
+                        }
+                        
                             
                     }else{}
                     
@@ -175,13 +182,13 @@
                     $crr_row_idx++;
                 }
 
-                //// Prints out the array
-                // if ($file_specifier == 1)
-                // {
-                //     echo '<pre>';
-                //     print_r($jobs_array);
-                //     echo '</pre>';
-                // }
+                // Prints out the array
+                if ($file_specifier == 1)
+                {
+                    echo '<pre>';
+                    print_r($jobs_array);
+                    echo '</pre>';
+                }
 
                 printer( '<br>Finished!<br>',  $file_specifier);
                 printer( 'Found '.$jobs_found.' jobs!<br>',  $file_specifier);

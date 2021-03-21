@@ -13,8 +13,8 @@ function TC1()
 {
     global $test_report, $txt_file;
 
-    fwrite($test_report, "----TEST1----\nImport valid file, expecting 13 lines\n");
-    $wanted = 13;
+    fwrite($test_report, "----TEST1----\nImport valid file, expecting 12 lines\n");
+    $wanted = 12;
     $got = 0; 
     $filename = "test1.xlsx";
     $return = parse_excel_file($filename, 0);
@@ -54,8 +54,8 @@ function TC3()
 {
     global $test_report, $txt_file;
 
-    fwrite($test_report, "----TEST3----\nImport file is missing 1 summary, expecting 12 lines\n");
-    $wanted = 12;
+    fwrite($test_report, "----TEST3----\nImport file is missing 1 summary, expecting 11 lines\n");
+    $wanted = 11;
     $got = 0; 
     $filename = "test3.xlsx";
     $return = parse_excel_file($filename, 0);
@@ -74,8 +74,8 @@ function TC4()
 {
     global $test_report, $txt_file;
 
-    fwrite($test_report, "----TEST4----\nImport files 1 job missing material row, expecting 13 lines\n");
-    $wanted = 13;
+    fwrite($test_report, "----TEST4----\nImport files 1 job missing material row, expecting 12 lines\n");
+    $wanted = 12;
     $got = 0; 
     $filename = "test4.xlsx";
     $return = parse_excel_file($filename, 0);
@@ -94,8 +94,8 @@ function TC5()
 {
     global $test_report, $txt_file;
 
-    fwrite($test_report, "----TEST5----\nImport files 1 job missing work row, expecting 13 lines\n");
-    $wanted = 13;
+    fwrite($test_report, "----TEST5----\nImport files 1 job missing work row, expecting 11 lines\n");
+    $wanted = 11;
     $got = 0; 
     $filename = "test5.xlsx";
     $return = parse_excel_file($filename, 0);
@@ -114,8 +114,8 @@ function TC6()
 {
     global $test_report, $txt_file;
 
-    fwrite($test_report, "----TEST6----\nImport valid file, missing 1 exit condition, expecting 13 lines\n");
-    $wanted = 13;
+    fwrite($test_report, "----TEST6----\nImport valid file, missing 1 exit condition, expecting 12 lines\n");
+    $wanted = 12;
     $got = 0; 
     $filename = "test6.xlsx";
     $return = parse_excel_file($filename, 0);
