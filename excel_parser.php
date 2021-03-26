@@ -122,8 +122,8 @@
                         //Chekc if header was found
                         if ($work_col_numb == $invalid_val)
                         {
-                            printer('Header not found',  $file_specifier);
-                            break;
+                            printer('Header not found<br>',  $file_specifier);
+                            continue;
                         }
                         $jobs_found++;
                         printer("<br>Found job $jobs_found! <br>",  $file_specifier);
@@ -142,7 +142,7 @@
                         $next_row = $rows[$next_row_idx];
 
                         //Find and assign work variables
-                        if ($next_row[0] == '' && $next_row[1] == 'Darbas')
+                        if ($next_row[0] == '' && $next_row[$work_col_numb] != '')
                         {
                             $work = $next_row[$work_col_numb];
                             $work_m = $next_row[$measurement_col_numb];

@@ -4,11 +4,8 @@
 v. 1.0.0
 Changes: 
 	Removed db use
-	Unit test are now written to file
+	Unit tests are now written to file
 	Added release notes
 	Removed die use
-
-v. 1.0.1
-Changes: 
-	Work is now mandatory
+	Minor code changes
 	
