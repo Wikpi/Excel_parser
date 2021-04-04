@@ -8,4 +8,19 @@ Changes:
 	Added release notes
 	Removed die use
 	Minor code changes
+
+v. 1.0.1
+Changes:
+	function now takes 2 parameters: 1st - the file that will be parsed.
+					2nd - a number(1 - if running parser noramly, prints all the info on screen
+							2 - if running unit testing, doesnt print anything on screen)
+
+
+v. 2.0.0
+Changes:
+	jobs_array fields have been renamed
+	added new estimate_sum_info array
+	excel_parser now uses excel_parser_function
+	function now reuturns an array containing both jobs_array and estimate_sum_array
+	
 	
